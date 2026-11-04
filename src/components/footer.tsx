@@ -6,6 +6,7 @@ import { FaXTwitter, FaInstagram, FaYoutube, FaLinkedinIn } from "react-icons/fa
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { categories } from "@/data/categories";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -13,8 +14,6 @@ const quickLinks = [
   { label: "How It Works", href: "/#how-it-works" },
   { label: "About Us", href: "/about" },
 ];
-
-const categories = ["Photo Studios", "Sound Stages", "Podcast Rooms", "Music Suites", "Art Workshops"];
 
 const socials = [
   { label: "X", icon: FaXTwitter, href: "https://x.com" },
@@ -84,12 +83,12 @@ export default function Footer() {
           <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider">Popular Categories</h4>
           <ul className="space-y-2.5 text-sm text-muted-foreground">
             {categories.map((c) => (
-              <li key={c}>
+              <li key={c.value}>
                 <Link
-                  href={`/studios?category=${encodeURIComponent(c)}`}
+                  href={`/studios?category=${encodeURIComponent(c.value)}`}
                   className="transition-colors hover:text-primary"
                 >
-                  {c}
+                  {c.label}
                 </Link>
               </li>
             ))}
