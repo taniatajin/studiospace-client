@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import WishlistButton from "@/components/wishlist-button";
 import { categories } from "@/data/categories";
 import type { Studio } from "@/data/studios";
 
@@ -27,6 +28,7 @@ export default function StudioCard({ studio }: { studio: Studio }) {
           <Star className="h-3.5 w-3.5 fill-primary text-primary" />
           {studio.rating.toFixed(1)}
         </span>
+        <WishlistButton studioId={studio._id} />
       </div>
 
       <div className="flex flex-1 flex-col p-5">
