@@ -7,6 +7,7 @@ import {
   Aperture,
   CalendarCheck,
   Building2,
+  Heart,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -40,6 +41,7 @@ const menuLinks = [
   { label: "Add New Studio", href: "/add-studio", icon: PlusCircle },
   { label: "My Studio Listings", href: "/my-listings", icon: Building2 },
   { label: "My Bookings", href: "/my-bookings", icon: CalendarCheck },
+  { label: "Saved Studios", href: "/saved", icon: Heart },
 ];
 
 export default function Navbar() {
