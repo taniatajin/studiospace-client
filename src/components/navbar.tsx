@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Aperture,
@@ -14,6 +14,7 @@ import {
   PlusCircle,
   Sun,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -25,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { signOut, useSession } from "@/lib/auth-client";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -40,17 +42,22 @@ const menuLinks = [
   { label: "My Bookings", href: "/my-bookings", icon: CalendarCheck },
 ];
 
-type User = { name: string; email: string; photo: string } | null;
-
-const user = {
-  name: "Alex",
-  email: "alex@mail.com",
-  photo: "https://i.pravatar.cc/100?img=12",
-} as User;
-
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { data: session, isPending } = useSession();
+  const user = session?.user
+    ? { name: session.user.name, email: session.user.email, photo: session.user.image ?? "" }
+    : null;
+
+  const handleLogout = async () => {
+    await signOut();
+    await fetch("/api/jwt", { method: "DELETE" });
+    toast.success("You have been logged out.");
+    router.push("/");
+    router.refresh();
+  };
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : !href.includes("#") && pathname.startsWith(href);
@@ -104,7 +111,9 @@ export default function Navbar() {
             <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           </Button>
 
-          {user ? (
+          {isPending ? (
+            <div className="h-9 w-24 animate-pulse rounded-full bg-muted" />
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 rounded-full border border-border py-1 pl-1 pr-3 outline-none transition-colors hover:bg-accent">
                 <Avatar className="h-7 w-7">
@@ -128,7 +137,10 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-red-500 focus:text-red-500">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer text-red-500 focus:text-red-500"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
@@ -166,7 +178,7 @@ export default function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                {!user && (
+                {!isPending && !user && (
                   <div className="mt-4 flex flex-col gap-2">
                     <Button variant="outline" asChild>
                       <Link href="/login">Login</Link>
