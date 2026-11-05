@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import AuthSync from "@/components/auth-sync";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk" });
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${grotesk.variable}`}>
       <body className="flex min-h-screen flex-col antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <AuthSync />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
