@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Building2 } from "lucide-react";
 import StudioCard from "@/components/studio-card";
-import { studios } from "@/data/studios";
+import { Button } from "@/components/ui/button";
+import { getStudios } from "@/lib/api";
 
-export default function FeaturedStudios() {
-  const featured = studios.slice(0, 6);
+export default async function FeaturedStudios() {
+  const featured = await getStudios("?limit=6&sort=newest");
 
   return (
     <section className="mx-auto max-w-7xl px-4 pb-20">
@@ -18,11 +19,24 @@ export default function FeaturedStudios() {
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {featured.map((studio) => (
-          <StudioCard key={studio._id} studio={studio} />
-        ))}
-      </div>
+      {featured.length > 0 ? (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((studio) => (
+            <StudioCard key={studio._id} studio={studio} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border px-4 py-14 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Building2 className="h-7 w-7" />
+          </span>
+          <h3 className="mt-5 text-xl font-semibold">No studios listed yet</h3>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">Be the first host to list a creative space.</p>
+          <Button className="mt-6" asChild>
+            <Link href="/add-studio">Host Your Space</Link>
+          </Button>
+        </div>
+      )}
     </section>
   );
 }

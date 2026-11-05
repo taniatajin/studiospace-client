@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StudioCard from "@/components/studio-card";
 import { categories } from "@/data/categories";
-import { studios } from "@/data/studios";
+import type { Studio } from "@/data/studios";
 
 const sortOptions = [
   { value: "", label: "Recommended" },
@@ -17,7 +17,7 @@ const sortOptions = [
   { value: "price-desc", label: "Price: high to low" },
 ];
 
-export default function StudiosExplorer() {
+export default function StudiosExplorer({ studios }: { studios: Studio[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,7 +46,7 @@ export default function StudiosExplorer() {
     if (sort === "price-asc") list = [...list].sort((a, b) => a.hourlyRate - b.hourlyRate);
     if (sort === "price-desc") list = [...list].sort((a, b) => b.hourlyRate - a.hourlyRate);
     return list;
-  }, [search, category, sort]);
+  }, [studios, search, category, sort]);
 
   const clearFilters = () => {
     setSearch("");

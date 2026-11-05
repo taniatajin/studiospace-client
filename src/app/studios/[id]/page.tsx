@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check, MapPin, ShieldCheck, Star, Users } from "lucide-react";
 import StudioGallery from "@/components/studio-gallery";
 import BookingModal from "@/components/booking-modal";
-import { studios } from "@/data/studios";
+import { getStudio } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 export default async function StudioDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const studio = studios.find((s) => s._id === id);
+  const studio = await getStudio(id);
 
   if (!studio) notFound();
 
@@ -45,44 +47,52 @@ export default async function StudioDetailsPage({ params }: { params: Promise<{ 
           <p className="mt-3 leading-relaxed text-muted-foreground">{studio.overview}</p>
 
           <h2 className="mt-10 text-xl font-semibold">Amenities</h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {studio.amenities.map((a) => (
-              <li key={a} className="flex items-center gap-2.5 text-sm">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                {a}
-              </li>
-            ))}
-          </ul>
+          {studio.amenities.length > 0 ? (
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {studio.amenities.map((a) => (
+                <li key={a} className="flex items-center gap-2.5 text-sm">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                  {a}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">The host has not listed any amenities yet.</p>
+          )}
 
           <h2 className="mt-10 text-xl font-semibold">Reviews</h2>
-          <div className="mt-4 space-y-4">
-            {studio.reviews.map((r) => (
-              <div key={r.name} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                      {r.name[0]}
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold">{r.name}</p>
-                      <p className="text-xs text-muted-foreground">{r.date}</p>
+          {studio.reviews.length > 0 ? (
+            <div className="mt-4 space-y-4">
+              {studio.reviews.map((r) => (
+                <div key={r.name} className="rounded-2xl border border-border bg-card p-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                        {r.name[0]}
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold">{r.name}</p>
+                        <p className="text-xs text-muted-foreground">{r.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < r.rating ? "fill-primary text-primary" : "text-muted-foreground/40"}`}
+                        />
+                      ))}
                     </div>
                   </div>
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${i < r.rating ? "fill-primary text-primary" : "text-muted-foreground/40"}`}
-                      />
-                    ))}
-                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">No reviews yet. Be the first to book and review.</p>
+          )}
         </div>
 
         {/* Right column: booking card */}

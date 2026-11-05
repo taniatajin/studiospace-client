@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarX2, Clock } from "lucide-react";
+import { CalendarX2, Clock, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,7 @@ import {
 import StatusBadge from "@/components/status-badge";
 import { apiFetch } from "@/lib/api-client";
 import { formatDate, formatHour } from "@/lib/format";
+import { downloadInvoice } from "@/lib/invoice";
 import type { Booking } from "@/lib/types";
 
 export default function MyBookingsPage() {
@@ -39,6 +40,15 @@ export default function MyBookingsPage() {
       active = false;
     };
   }, []);
+
+  const handleInvoice = async (booking: Booking) => {
+    try {
+      await downloadInvoice(booking);
+      toast.success("Invoice downloaded.");
+    } catch {
+      toast.error("Could not generate the invoice. Please try again.");
+    }
+  };
 
   const confirmCancel = async () => {
     if (!target) return;
@@ -84,7 +94,10 @@ export default function MyBookingsPage() {
       ) : (
         <div className="mt-8 space-y-4">
           {bookings.map((b) => (
-            <div key={b._id} className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center">
+            <div
+              key={b._id}
+              className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={b.studioImage} alt={b.studioTitle} className="h-28 w-full rounded-xl object-cover sm:w-40" />
               <div className="flex-1">
@@ -103,9 +116,15 @@ export default function MyBookingsPage() {
                   Total: <span className="font-semibold text-primary">${b.totalPrice}</span>
                 </p>
               </div>
+
               {b.status === "Pending" && (
                 <Button variant="outline" onClick={() => setTarget(b)} className="text-red-500 hover:text-red-500">
                   Cancel Booking
+                </Button>
+              )}
+              {(b.status === "Confirmed" || b.status === "Completed") && (
+                <Button variant="outline" onClick={() => handleInvoice(b)}>
+                  <Download className="mr-1.5 h-4 w-4" /> Invoice
                 </Button>
               )}
             </div>

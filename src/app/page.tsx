@@ -4,6 +4,8 @@ import FeaturedStudios from "@/components/home/featured-studios";
 import HowItWorks from "@/components/home/how-it-works";
 import HostGuarantee from "@/components/home/host-guarantee";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

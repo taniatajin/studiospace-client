@@ -1,12 +1,17 @@
 import { Suspense } from "react";
 import StudiosExplorer from "@/components/studios-explorer";
 import { StudiosGridSkeleton } from "@/components/skeletons";
+import { getStudios } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Explore Studios | StudioSpace",
 };
 
-export default function StudiosPage() {
+export default async function StudiosPage() {
+  const studios = await getStudios();
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       <p className="text-xs font-semibold uppercase tracking-widest text-primary">Explore</p>
@@ -16,7 +21,7 @@ export default function StudiosPage() {
       </p>
 
       <Suspense fallback={<StudiosGridSkeleton />}>
-        <StudiosExplorer />
+        <StudiosExplorer studios={studios} />
       </Suspense>
     </section>
   );
